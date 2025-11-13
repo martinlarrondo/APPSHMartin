@@ -1,21 +1,58 @@
 package com.example.myapplication.Screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplication.Composables.BottomBar
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Composable
-fun SegundaScreen(navController: NavHostController) {
-    Scaffold(
-        bottomBar = { BottomBar(navController) }
-    ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            Text("Hola otra vez")
+fun SegundaScreen(
+    navController: NavHostController,
+    notificaciones: List<Notificacion>
+) {
+    Scaffold(bottomBar = { BottomBar(navController) }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Notificaciones recientes",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF4CAF50),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(notificaciones.reversed()) { notificacion ->
+                    Text(
+                        text = "-${notificacion.hora}- ${notificacion.mensaje}",
+                        color = if (notificacion.abierta) Color.Red else Color(0xFF4CAF50),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
+                    )
+                }
+            }
         }
     }
 }
+

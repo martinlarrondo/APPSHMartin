@@ -12,17 +12,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplication.Composables.BottomBar
+import java.text.SimpleDateFormat
+import java.util.*
+
+data class Notificacion(val mensaje: String, val abierta: Boolean, val hora: String)
 
 @Composable
-fun PrincipalScreen(navController: NavHostController) {
-    // --- Estados simulados ---
-    var alarmaActiva by remember { mutableStateOf(true) }
-    var puertaPrincipalAbierta by remember { mutableStateOf(false) }
-    var ventanaPrincipalAbierta by remember { mutableStateOf(false) }
-    var puertaHabitacionAbierta by remember { mutableStateOf(false) }
-
-    // Estado general (si todo cerrado)
+fun PrincipalScreen(
+    navController: NavHostController,
+    alarmaActiva: Boolean,
+    onAlarmaChange: (Boolean) -> Unit,
+    puertaPrincipalAbierta: Boolean,
+    onPuertaPrincipalChange: (Boolean) -> Unit,
+    ventanaPrincipalAbierta: Boolean,
+    onVentanaPrincipalChange: (Boolean) -> Unit,
+    puertaHabitacionAbierta: Boolean,
+    onPuertaHabitacionChange: (Boolean) -> Unit,
+    notificaciones: List<Notificacion>,
+    agregarNotificacion: (Notificacion) -> Unit
+) {
     val todoCerrado = !puertaPrincipalAbierta && !ventanaPrincipalAbierta && !puertaHabitacionAbierta
+    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+    fun notificar(mensaje: String, abierta: Boolean) {
+        val horaActual = sdf.format(Date())
+        agregarNotificacion(Notificacion(mensaje, abierta, horaActual))
+    }
 
     Scaffold(
         bottomBar = { BottomBar(navController) }
@@ -35,7 +50,6 @@ fun PrincipalScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             Text(
                 text = "Estado general del hogar",
                 fontSize = 22.sp,
@@ -48,7 +62,6 @@ fun PrincipalScreen(navController: NavHostController) {
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Estado general del Hogar
                 Card(
                     modifier = Modifier
                         .width(150.dp)
@@ -70,7 +83,6 @@ fun PrincipalScreen(navController: NavHostController) {
                     }
                 }
 
-                // Control de Alarma
                 Card(
                     modifier = Modifier
                         .width(150.dp)
@@ -93,7 +105,6 @@ fun PrincipalScreen(navController: NavHostController) {
                 }
             }
 
-            // --- Control de alarma ---
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,7 +127,13 @@ fun PrincipalScreen(navController: NavHostController) {
                     Spacer(Modifier.height(16.dp))
 
                     Button(
-                        onClick = { alarmaActiva = !alarmaActiva },
+                        onClick = {
+                            onAlarmaChange(!alarmaActiva)
+                            notificar(
+                                mensaje = "Alarma ${if (!alarmaActiva) "activada" else "desactivada"}",
+                                abierta = !alarmaActiva
+                            )
+                        },
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .height(50.dp),
@@ -144,7 +161,6 @@ fun PrincipalScreen(navController: NavHostController) {
                 }
             }
 
-            // --- Estado de puertas y ventanas ---
             Text(
                 text = "Ventanas y Puertas",
                 fontSize = 20.sp,
@@ -152,20 +168,31 @@ fun PrincipalScreen(navController: NavHostController) {
             )
 
             EstadoElemento("Puerta principal", puertaPrincipalAbierta) {
-                puertaPrincipalAbierta = !puertaPrincipalAbierta
+                onPuertaPrincipalChange(!puertaPrincipalAbierta)
+                notificar(
+                    "Puerta principal ${if (!puertaPrincipalAbierta) "abierta" else "cerrada"}",
+                    !puertaPrincipalAbierta
+                )
             }
 
             EstadoElemento("Ventana principal", ventanaPrincipalAbierta) {
-                ventanaPrincipalAbierta = !ventanaPrincipalAbierta
+                onVentanaPrincipalChange(!ventanaPrincipalAbierta)
+                notificar(
+                    "Ventana principal ${if (!ventanaPrincipalAbierta) "abierta" else "cerrada"}",
+                    !ventanaPrincipalAbierta
+                )
             }
 
             EstadoElemento("Puerta habitación", puertaHabitacionAbierta) {
-                puertaHabitacionAbierta = !puertaHabitacionAbierta
+                onPuertaHabitacionChange(!puertaHabitacionAbierta)
+                notificar(
+                    "Puerta habitación ${if (!puertaHabitacionAbierta) "abierta" else "cerrada"}",
+                    !puertaHabitacionAbierta
+                )
             }
         }
     }
 }
-
 
 @Composable
 fun EstadoElemento(nombre: String, abierto: Boolean, onClick: () -> Unit) {
