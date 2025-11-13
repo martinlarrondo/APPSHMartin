@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "688795402832",
+    "project_id": "appseguridadhogar",
+    "storage_bucket": "appseguridadhogar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688795402832:android:2419057a311dea66170755",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWOGFjycssuoOA60T4Wob5BB-mvdoTu2g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
