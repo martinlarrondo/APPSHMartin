@@ -48,7 +48,7 @@ fun PrincipalScreen(navController: NavHostController) {
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Estado general del hogar
+                // Estado general del Hogar
                 Card(
                     modifier = Modifier
                         .width(150.dp)
@@ -166,7 +166,7 @@ fun PrincipalScreen(navController: NavHostController) {
     }
 }
 
-// 🔹 COMPONENTE ACTUALIZADO 🔹
+
 @Composable
 fun EstadoElemento(nombre: String, abierto: Boolean, onClick: () -> Unit) {
     Card(
