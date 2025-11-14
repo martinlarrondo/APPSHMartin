@@ -13,7 +13,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun BottomBar(navController: NavHostController) {
     BottomAppBar(
-        containerColor = Color(0xFF4CAF50), // Fondo verde
+        containerColor = Color(0xFF4CAF50),
         contentColor = Color.White,
         tonalElevation = 8.dp
     ) {
@@ -36,7 +36,7 @@ fun BottomBar(navController: NavHostController) {
                 Text("Home")
             }
 
-            // 🔹 Botón Notificaciones
+            // Notificaciones
             Button(
                 onClick = { navController.navigate("segunda") }, // puedes cambiar el destino si tienes otra pantalla
                 shape = RoundedCornerShape(8.dp),

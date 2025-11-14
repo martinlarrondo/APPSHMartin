@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplication.Composables.BottomBar
-import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Composable
 fun SegundaScreen(
@@ -38,15 +37,26 @@ fun SegundaScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+
+            val ordenadas = notificaciones.sortedByDescending { it.hora }
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(notificaciones.reversed()) { notificacion ->
+                items(ordenadas) { notificacion ->
+
+
+                    val colorTexto = if (notificacion.abierta) {
+                        Color.Red
+                    } else {
+                        Color(0xFF4CAF50)
+                    }
+
                     Text(
                         text = "-${notificacion.hora}- ${notificacion.mensaje}",
-                        color = if (notificacion.abierta) Color.Red else Color(0xFF4CAF50),
+                        color = colorTexto,
                         fontWeight = FontWeight.Medium,
                         fontSize = 16.sp
                     )
@@ -55,4 +65,3 @@ fun SegundaScreen(
         }
     }
 }
-

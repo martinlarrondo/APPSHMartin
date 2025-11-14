@@ -12,8 +12,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplication.Composables.BottomBar
+import com.example.myapplication.FirebaseConfig
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.myapplication.FirebaseConfig.db
+
 
 data class Notificacion(val mensaje: String, val abierta: Boolean, val hora: String)
 
@@ -31,13 +34,42 @@ fun PrincipalScreen(
     notificaciones: List<Notificacion>,
     agregarNotificacion: (Notificacion) -> Unit
 ) {
+
+    val db = FirebaseConfig.db
+
     val todoCerrado = !puertaPrincipalAbierta && !ventanaPrincipalAbierta && !puertaHabitacionAbierta
     val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     fun notificar(mensaje: String, abierta: Boolean) {
         val horaActual = sdf.format(Date())
-        agregarNotificacion(Notificacion(mensaje, abierta, horaActual))
+        val noti = Notificacion(mensaje, abierta, horaActual)
+
+        // Guarda en memoria local
+        agregarNotificacion(noti)
+
+        // Guarda en Firebase
+        db.collection("notificaciones")
+            .add(
+                mapOf(
+                    "mensaje" to mensaje,
+                    "abierta" to abierta,
+                    "hora" to horaActual
+                )
+            )
     }
+
+
+    // Guarda el estado general en Firebase
+    fun guardarEstado() {
+        val data = mapOf(
+            "alarmaActiva" to alarmaActiva,
+            "puertaPrincipalAbierta" to puertaPrincipalAbierta,
+            "ventanaPrincipalAbierta" to ventanaPrincipalAbierta,
+            "puertaHabitacionAbierta" to puertaHabitacionAbierta
+        )
+        db.collection("estadoHogar").document("estado").set(data)
+    }
+
 
     Scaffold(
         bottomBar = { BottomBar(navController) }
@@ -50,6 +82,7 @@ fun PrincipalScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
             Text(
                 text = "Estado general del hogar",
                 fontSize = 22.sp,
@@ -76,7 +109,7 @@ fun PrincipalScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = if (todoCerrado) "Todo cerradao" else "Hay aperturas",
+                            text = if (todoCerrado) "Todo cerrado" else "Hay aperturas",
                             color = Color.White,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -118,6 +151,7 @@ fun PrincipalScreen(
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
                     Text(
                         text = "CONTROL DE ALARMA",
                         fontWeight = FontWeight.Bold,
@@ -129,6 +163,8 @@ fun PrincipalScreen(
                     Button(
                         onClick = {
                             onAlarmaChange(!alarmaActiva)
+                            guardarEstado()
+
                             notificar(
                                 mensaje = "Alarma ${if (!alarmaActiva) "activada" else "desactivada"}",
                                 abierta = !alarmaActiva
@@ -169,6 +205,8 @@ fun PrincipalScreen(
 
             EstadoElemento("Puerta principal", puertaPrincipalAbierta) {
                 onPuertaPrincipalChange(!puertaPrincipalAbierta)
+                guardarEstado()
+
                 notificar(
                     "Puerta principal ${if (!puertaPrincipalAbierta) "abierta" else "cerrada"}",
                     !puertaPrincipalAbierta
@@ -177,6 +215,8 @@ fun PrincipalScreen(
 
             EstadoElemento("Ventana principal", ventanaPrincipalAbierta) {
                 onVentanaPrincipalChange(!ventanaPrincipalAbierta)
+                guardarEstado()
+
                 notificar(
                     "Ventana principal ${if (!ventanaPrincipalAbierta) "abierta" else "cerrada"}",
                     !ventanaPrincipalAbierta
@@ -185,6 +225,8 @@ fun PrincipalScreen(
 
             EstadoElemento("Puerta habitación", puertaHabitacionAbierta) {
                 onPuertaHabitacionChange(!puertaHabitacionAbierta)
+                guardarEstado()
+
                 notificar(
                     "Puerta habitación ${if (!puertaHabitacionAbierta) "abierta" else "cerrada"}",
                     !puertaHabitacionAbierta
@@ -209,11 +251,7 @@ fun EstadoElemento(nombre: String, abierto: Boolean, onClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = nombre,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Text(text = nombre, fontSize = 16.sp, fontWeight = FontWeight.Medium)
 
             Text(
                 text = if (abierto) "Abierta" else "Cerrada",
@@ -236,3 +274,5 @@ fun EstadoElemento(nombre: String, abierto: Boolean, onClick: () -> Unit) {
         }
     }
 }
+
+
