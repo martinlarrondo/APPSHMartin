@@ -88,6 +88,7 @@ fun NavController() {
     }
 
     // 🔵 NAVEGACIÓN
+    //navegacion del nav
     NavHost(navController = navController, startDestination = "login") {
 
         composable("login") {
